@@ -29,7 +29,7 @@ class MONKEY2Dataset(Dataset):
         self.class_label2idx = pd.read_csv(class_idx_path, header=None, sep=' ').set_index(1)[0]
         if self.train:
             train_split_path = os.path.join(root_dir, 'split', 'trainlist0' + self.split + '.txt')
-            self.train_split = pd.read_csv(train_split_path, header=None)[0]
+            self.train_split = pd.read_csv(train_split_path, header=None, sep=' ')[0]
         else:
             test_split_path = os.path.join(root_dir, 'split', 'testlist0' + self.split + '.txt')
             self.test_split = pd.read_csv(test_split_path, header=None)[0]
