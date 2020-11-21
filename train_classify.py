@@ -15,6 +15,7 @@ from tensorboardX import SummaryWriter
 
 from datasets.ucf101 import UCF101Dataset
 from datasets.hmdb51 import HMDB51Dataset
+from datasets.monkey2 import MONKEY2Dataset
 from models.c3d import C3D
 from models.r3d import R3DNet
 from models.r21d import R2Plus1DNet
@@ -147,7 +148,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Video Classification')
     parser.add_argument('--mode', type=str, default='train', help='train/test')
     parser.add_argument('--model', type=str, default='c3d', help='c3d/r3d/r21d')
-    parser.add_argument('--dataset', type=str, default='ucf101', help='ucf101/hmdb51')
+    parser.add_argument('--dataset', type=str, default='ucf101', help='ucf101/hmdb51/monkey2')
     parser.add_argument('--split', type=str, default='1', help='dataset split')
     parser.add_argument('--cl', type=int, default=16, help='clip length')
     parser.add_argument('--gpu', type=int, default=0, help='GPU id')
@@ -189,6 +190,8 @@ if __name__ == '__main__':
         class_num = 101
     elif args.dataset == 'hmdb51':
         class_num = 51
+    elif args.dataset == "monkey2":
+        class_num = 2
 
     if args.model == 'c3d':
         print(class_num)
@@ -225,6 +228,11 @@ if __name__ == '__main__':
             train_dataset = HMDB51Dataset('data/hmdb51', args.cl, args.split, True, train_transforms)
             val_size = 400
             train_dataset, val_dataset = random_split(train_dataset, (len(train_dataset) - val_size, val_size))
+        elif args.dataset == "monkey2":
+            train_dataset = MONKEY2Dataset('data/monkey2', args.cl, args.split, True, train_transforms)
+            val_size = 20
+            train_dataset, val_dataset = random_split(train_dataset, (len(train_dataset) - val_size, val_size))
+
 
         print('TRAIN video number: {}, VAL video number: {}.'.format(len(train_dataset), len(val_dataset)))
         train_dataloader = DataLoader(train_dataset, batch_size=args.bs, shuffle=True,
@@ -285,7 +293,8 @@ if __name__ == '__main__':
             test_dataset = UCF101Dataset('data/ucf101', args.cl, args.split, False, test_transforms, 10)
         elif args.dataset == 'hmdb51':
             test_dataset = HMDB51Dataset('data/hmdb51', args.cl, args.split, False, test_transforms, 10)
-
+        elif args.dataset == 'monkey2':
+            test_dataset = MONKEY2Dataset('data/monkey2', args.cl, args.split, False, test_transforms, 10)
         test_dataloader = DataLoader(test_dataset, batch_size=args.bs, shuffle=False,
                                      num_workers=args.workers, pin_memory=True)
         print('TEST video number: {}.'.format(len(test_dataset)))
